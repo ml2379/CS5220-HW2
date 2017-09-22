@@ -45,6 +45,8 @@ int main(int argc, char **argv)
     if (world_rank==0) {
         printf("Starting Telephone with %d MPI Ranks...\n", world_size);
         printf("MPI rank 0 starting message: %s \n", buf);
+	/*garble Here ?*/
+	garble(buf);
     }
 
     // If there is just one rank, bail out
@@ -63,7 +65,7 @@ int main(int argc, char **argv)
             ~~~~~~~~~~~~~~Complete: ~~~~~~~~~~~~~~~~
 	    */
 
-            MPI_Send(&buf,len,MPI_CHAR,world_rank+1,0,MPI_COMM_WORLD);
+	    MPI_Send(buf,len,MPI_CHAR,(world_rank+1)%world_size,0,MPI_COMM_WORLD);
 
 	    /*
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,7 +76,7 @@ int main(int argc, char **argv)
             /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             ~~~~~~~~~~~~~~Complete: ~~~~~~~~~~~~~~~~*/
 
-            MPI_Recv(&buf,len,MPI_CHAR,world_rank-1,0,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(buf,len,MPI_CHAR,world_rank==0?(world_size-1):(world_rank-1),0,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             
 	    /*
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -83,7 +85,8 @@ int main(int argc, char **argv)
             garble(buf);
             printf("MPI rank %d received message: %s\n", world_rank, buf);
         }
-        MPI_Barrier(MPI_COMM_WORLD);
+  
+	MPI_Barrier(MPI_COMM_WORLD);
     }
 
     // Finalize MPI environment.
