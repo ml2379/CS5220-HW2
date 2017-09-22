@@ -45,8 +45,8 @@ int main(int argc, char **argv)
     if (world_rank==0) {
         printf("Starting Telephone with %d MPI Ranks...\n", world_size);
         printf("MPI rank 0 starting message: %s \n", buf);
-	/*garble Here ?*/
-	garble(buf);
+	/*garble Here?
+	garble(buf); */
     }
 
     // If there is just one rank, bail out
@@ -82,8 +82,15 @@ int main(int argc, char **argv)
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-            garble(buf);
-            printf("MPI rank %d received message: %s\n", world_rank, buf);
+            
+	    /* I modified the output a little bit
+	     * I also put the printf command ahead of garble instead of after it*/
+	    
+	    /*printf("MPI rank %d received message: %s\n", world_rank, buf);*/
+	    
+	    int receive_from=(world_rank==0?(world_size-1):(world_rank-1));
+	    printf("MPI rank %d received message: %s from rank %d\n", world_rank, buf, receive_from);
+	    garble(buf);
         }
   
 	MPI_Barrier(MPI_COMM_WORLD);
